@@ -2,6 +2,8 @@ import asyncio
 import random
 import os
 import aiosqlite
+from dotenv import load_dotenv
+load_dotenv()
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.fsm.storage.memory import MemoryStorage
