@@ -96,7 +96,7 @@ def wishes_buttons(room_id):
 async def handle_new_user(user_id, username, room_id, state: FSMContext, message_obj):
     async with aiosqlite.connect(DB_FILE) as db:
         # Получаем информацию о комнате
-        cur = await db.execute("SELECT title, banned, password, description FROM rooms WHERE id=?", (room_id,))
+        cur = await db.execute("SELECT admin_id, title, banned, password, description FROM rooms WHERE id=?", (room_id,))
         row = await cur.fetchone()
         if not row:
             # Исправлено: message_obj может быть types.Message или types.CallbackQuery
@@ -105,15 +105,15 @@ async def handle_new_user(user_id, username, room_id, state: FSMContext, message
             else:
                 await message_obj.answer("❌ Комната не найдена")
             return
-        room_name, banned, room_password, room_description = row
+            admin_id, room_name, banned, room_password, room_description = row
 
-        # Проверка banned
-        if banned and str(user_id) in banned.split(','):
-            if isinstance(message_obj, types.CallbackQuery):
-                await message_obj.message.answer("⛔ Вы были удалены из этой комнаты и не можете в неё войти.")
-            else:
-                await message_obj.answer("⛔ Вы были удалены из этой комнаты и не можете в неё войти.")
-            return
+        # Проверка banned (но админ может войти всегда)
+if banned and str(user_id) in banned.split(',') and user_id != admin_id:
+    if isinstance(message_obj, types.CallbackQuery):
+        await message_obj.message.answer("⛔ Вы были удалены из этой комнаты и не можете в неё войти.")
+    else:
+        await message_obj.answer("⛔ Вы были удалены из этой комнаты и не можете в неё войти.")
+    return
 
         # Проверка пароля при join
         data = await state.get_data()
