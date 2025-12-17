@@ -111,9 +111,9 @@ async def handle_new_user(user_id, username, room_id, state: FSMContext, message
 if banned and str(user_id) in banned.split(',') and user_id != admin_id:
     if isinstance(message_obj, types.CallbackQuery):
         await message_obj.message.answer("⛔ Вы были удалены из этой комнаты и не можете в неё войти.")
-          else:
+    else:
         await message_obj.answer("⛔ Вы были удалены из этой комнаты и не можете в неё войти.")
-        return
+    return
 
     # Проверка пароля при join
     data = await state.get_data()
