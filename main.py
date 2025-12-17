@@ -111,17 +111,17 @@ async def handle_new_user(user_id, username, room_id, state: FSMContext, message
 if banned and str(user_id) in banned.split(',') and user_id != admin_id:
     if isinstance(message_obj, types.CallbackQuery):
         await message_obj.message.answer("⛔ Вы были удалены из этой комнаты и не можете в неё войти.")
-    else:
+          else:
         await message_obj.answer("⛔ Вы были удалены из этой комнаты и не можете в неё войти.")
-    return
+        return
 
-        # Проверка пароля при join
-        data = await state.get_data()
-        if room_password and data.get("password_verified") != True:
-            # Сохраняем данные для JoinPasswordState
-            await state.update_data(room_id=room_id, user_id=user_id, username=username, room_password=room_password)
+    # Проверка пароля при join
+    data = await state.get_data()
+    if room_password and data.get("password_verified") != True:
+        # Сохраняем данные для JoinPasswordState
+        await state.update_data(room_id=room_id, user_id=user_id, username=username, room_password=room_password)
 
-            # Отправляем сообщение
+        # Отправляем сообщение
             if isinstance(message_obj, types.CallbackQuery):
                 await message_obj.message.answer(f"🔒 Эта комната защищена паролем. Введите 4-значный пароль:")
             else:
